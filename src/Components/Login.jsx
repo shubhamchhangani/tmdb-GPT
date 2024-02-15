@@ -5,12 +5,20 @@ import { checkValidData } from "../Utils/validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../Utils/Firebase";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../Utils/UserSlice";
 
 export default function Login() {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const name = useRef(null);
 
   const email = useRef(null);
 
@@ -29,7 +37,7 @@ export default function Login() {
     }
     //Sign in || Sign up
     if (!isSignInForm) {
-      //Sign up Login
+      //Sign up Logic
       createUserWithEmailAndPassword(
         auth,
         email.current.value,
@@ -38,7 +46,31 @@ export default function Login() {
         .then((userCredential) => {
           // Signed up
           const user = userCredential.user;
-          console.log(user);
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: "https://avatars.githubusercontent.com/u/69025204?v=4",
+          })
+            .then(() => {
+              // Profile updated!
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              // ...
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+              // ...
+            })
+            .catch((error) => {
+              // An error occurred
+              setErrorMessage(error.message);
+              // ...
+            });
+          //on successful sign up go to browse page
+          navigate("/browse");
           // ...
         })
         .catch((error) => {
@@ -57,7 +89,8 @@ export default function Login() {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user);
+          //on successful sign in go to browse page
+          navigate("/browse");
           // ...
         })
         .catch((error) => {
@@ -82,6 +115,7 @@ export default function Login() {
         </h1>
         {!isSignInForm && (
           <input
+            ref={name}
             type="text"
             placeholder="Full Name"
             className="w-full rounded-md bg-gray-700 p-3 mb-3"
