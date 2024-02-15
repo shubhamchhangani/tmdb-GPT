@@ -8,14 +8,13 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../Utils/Firebase";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../Utils/UserSlice";
 
 export default function Login() {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const name = useRef(null);
@@ -70,7 +69,7 @@ export default function Login() {
               // ...
             });
           //on successful sign up go to browse page
-          navigate("/browse");
+
           // ...
         })
         .catch((error) => {
@@ -90,7 +89,7 @@ export default function Login() {
           // Signed in
           const user = userCredential.user;
           //on successful sign in go to browse page
-          navigate("/browse");
+
           // ...
         })
         .catch((error) => {
