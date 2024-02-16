@@ -23,7 +23,7 @@ export default function Header() {
   }
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // User is signed in
         const { uid, email, displayName, photoURL } = user;
@@ -44,6 +44,8 @@ export default function Header() {
         // ...
       }
     });
+    //unsubscribe when the component unmount
+    return () => unsubscribe();
   }, []);
   return (
     <div className="absolute px-8 py-2 bg-gradient-to-b from-black z-10 w-full flex justify-between">
